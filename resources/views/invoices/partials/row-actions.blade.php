@@ -11,13 +11,12 @@
         <x-icon name="download" class="w-4 h-4" /> <span class="hidden sm:inline">Télécharger</span>
     </a>
 
-    <a href="https://wa.me/{{ preg_replace('/\D/', '', $invoice->client_phone) }}?text={{ urlencode(
-            "Bonjour {$invoice->client_name}\nMerci pour votre achat chez MUNDO TECH.\nVeuillez trouver votre facture : " . route('invoices.download', $invoice) . "\nNous restons à votre disposition."
-        ) }}"
-       target="_blank" title="Envoyer sur WhatsApp"
+    <button type="button"
+       onclick="sendInvoiceOnWhatsapp(@js(route('invoices.download', $invoice)), @js(preg_replace('/\D/', '', $invoice->client_phone)), @js("Bonjour {$invoice->client_name}\nMerci pour votre achat chez MUNDO TECH.\nVeuillez trouver ci-joint votre facture.\nNous restons à votre disposition."), @js($invoice->invoice_number . '.pdf'))"
+       title="Partager la facture sur WhatsApp"
        class="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1.5 rounded-lg transition">
         <x-icon name="chat" class="w-4 h-4" /> <span class="hidden sm:inline">WhatsApp</span>
-    </a>
+    </button>
 
     <form method="POST" action="{{ route('invoices.destroy', $invoice) }}"
           @submit="deleting = true"

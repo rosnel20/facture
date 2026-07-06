@@ -159,6 +159,78 @@
         }
     </script>
 
+    {{-- Envoi WhatsApp avec pièce jointe réelle quand c'est possible.
+         1) Sur mobile (Android/iOS récents) : l'API de partage native du
+            navigateur permet d'attacher vraiment le PDF au partage — un
+            seul geste, on choisit WhatsApp dans le menu qui s'ouvre.
+         2) Sur desktop ou navigateur non compatible : on retombe sur la
+            méthode précédente (téléchargement + ouverture de WhatsApp),
+            il suffit alors de joindre le fichier manuellement.
+         Important : on copie le message dans le presse-papier et on
+         affiche le toast AVANT d'ouvrir le partage natif, car une fois
+         la fenêtre de partage ouverte, la page perd le focus et le
+         presse-papier devient inaccessible (silencieusement refusé). --}}
+    <script>
+        async function sendInvoiceOnWhatsapp(downloadUrl, phone, message, fileName) {
+            try {
+                const response = await fetch(downloadUrl);
+                if (!response.ok) throw new Error('download failed');
+                const blob = await response.blob();
+                const file = new File([blob], fileName, { type: 'application/pdf' });
+
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    // On copie et on prévient AVANT d'ouvrir le partage,
+                    // pendant que la page a encore le focus.
+                    try {
+                        await navigator.clipboard.writeText(message);
+                        window.dispatchEvent(new CustomEvent('toast', {
+                            detail: {
+                                type: 'info',
+                                message: "Message copié dans le presse-papier — colle-le comme légende dans WhatsApp après avoir choisi le contact."
+                            }
+                        }));
+                    } catch (clipErr) {
+                        // Presse-papier indisponible : pas grave, le fichier sera quand même partagé.
+                    }
+
+                    await navigator.share({ files: [file], text: message });
+
+                    window.dispatchEvent(new CustomEvent('toast', {
+                        detail: {
+                            type: 'info',
+                            message: "N'oublie pas de coller le message copié comme légende avant d'envoyer sur WhatsApp."
+                        }
+                    }));
+                    return;
+                }
+            } catch (err) {
+                if (err && err.name === 'AbortError') {
+                    // L'utilisateur a annulé le partage : on ne fait rien de plus.
+                    return;
+                }
+                // Sinon on continue vers la méthode de secours ci-dessous.
+            }
+
+            window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(message), '_blank', 'noopener');
+
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.rel = 'noopener';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            if (!navigator.canShare) {
+                window.dispatchEvent(new CustomEvent('toast', {
+                    detail: {
+                        type: 'info',
+                        message: "Le PDF a été téléchargé — il ne reste qu'à le joindre dans la conversation WhatsApp."
+                    }
+                }));
+            }
+        }
+    </script>
+
     @stack('scripts')
 </body>
 </html>

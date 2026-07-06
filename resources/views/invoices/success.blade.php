@@ -193,14 +193,12 @@
 
         {{-- ── ACTIONS RAPIDES ──────────────────────────────────── --}}
         <div class="actions-grid">
-            <a href="https://wa.me/{{ preg_replace('/\D/', '', $invoice->client_phone) }}?text={{ urlencode(
-                    "Bonjour {$invoice->client_name}\nMerci pour votre achat chez {$settings->company_name}.\nVeuillez trouver votre facture : " . route('invoices.download', $invoice) . "\nNous restons à votre disposition."
-                ) }}"
-               target="_blank"
+            <button type="button"
+               onclick="sendInvoiceOnWhatsapp(@js(route('invoices.download', $invoice)), @js(preg_replace('/\D/', '', $invoice->client_phone)), @js("Bonjour {$invoice->client_name}\nMerci pour votre achat chez {$settings->company_name}.\nVeuillez trouver ci-joint votre facture.\nNous restons à votre disposition."), @js($invoice->invoice_number . '.pdf'))"
                class="action-btn action-whatsapp">
                 <x-icon name="chat" class="w-5 h-5" />
                 Envoyer sur WhatsApp
-            </a>
+            </button>
 
             <a href="{{ route('invoices.show', $invoice) }}" target="_blank" class="action-btn action-pdf">
                 <x-icon name="eye" />
@@ -212,6 +210,10 @@
                 Télécharger
             </a>
         </div>
+
+        <p style="font-size:11px; color:#94a3b8; text-align:center; margin-top:10px;">
+            Le PDF se télécharge automatiquement, puis WhatsApp s'ouvre — il ne reste qu'à joindre le fichier dans la conversation.
+        </p>
     </div>
 
     {{-- ── CONTINUER ─────────────────────────────────────────────── --}}
