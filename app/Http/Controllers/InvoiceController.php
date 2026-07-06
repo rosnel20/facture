@@ -79,7 +79,7 @@ class InvoiceController extends Controller
         $this->generatePdf($invoice);
 
         return redirect()
-            ->route('invoices.show', $invoice)
+            ->route('invoices.success', $invoice)
             ->with('success', 'Facture ' . $invoice->invoice_number . ' générée avec succès.');
     }
 
@@ -178,6 +178,19 @@ class InvoiceController extends Controller
         Storage::disk('public')->put($path, $pdf->output());
 
         $invoice->update(['pdf_path' => $path]);
+    }
+
+    /**
+     * Page de confirmation moderne affichée juste après la création
+     * d'une facture, avec récapitulatif et actions rapides
+     * (voir le PDF, télécharger, envoyer sur WhatsApp).
+     */
+    public function success(Invoice $invoice)
+    {
+        $invoice->load('items');
+        $settings = Setting::current();
+
+        return view('invoices.success', compact('invoice', 'settings'));
     }
 
     /**

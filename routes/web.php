@@ -14,6 +14,7 @@ Route::prefix('factures')->name('invoices.')->group(function () {
 
     Route::get('/historique', [InvoiceController::class, 'index'])->name('index');
 
+    Route::get('/{invoice}/succes', [InvoiceController::class, 'success'])->name('success');
     Route::get('/{invoice}', [InvoiceController::class, 'show'])->name('show');
     Route::get('/{invoice}/telecharger', [InvoiceController::class, 'download'])->name('download');
     Route::delete('/{invoice}', [InvoiceController::class, 'destroy'])->name('destroy');
