@@ -78,8 +78,15 @@
                     <x-icon name="menu" class="w-5 h-5" />
                 </button>
                 <div class="flex items-center gap-2">
-                    <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white text-xs font-bold">MT</span>
-                    <span class="font-bold text-slate-800 text-sm">MUNDO TECH</span>
+                    @php($__topbarSettings = \App\Models\Setting::current())
+                    @if($__topbarSettings->logo_path)
+                        <img src="{{ asset('storage/' . $__topbarSettings->logo_path) }}"
+                             alt="{{ $__topbarSettings->company_name }}"
+                             class="w-8 h-8 rounded-lg object-contain bg-white border border-brand-100 p-1">
+                    @else
+                        <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white text-xs font-bold">MT</span>
+                    @endif
+                    <span class="font-bold text-slate-800 text-sm">{{ $__topbarSettings->company_name }}</span>
                 </div>
                 <div class="w-10"></div>
             </header>

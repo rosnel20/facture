@@ -1,10 +1,18 @@
 {{-- Contenu de la sidebar, partagé entre version desktop et drawer mobile --}}
 
+@php($__sidebarSettings = \App\Models\Setting::current())
+
 <div class="px-6 pt-7 pb-6">
     <div class="flex items-center gap-3">
-        <span class="w-11 h-11 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-800 flex items-center justify-center text-white font-bold text-sm shadow-soft">MT</span>
+        @if($__sidebarSettings->logo_path)
+            <img src="{{ asset('storage/' . $__sidebarSettings->logo_path) }}"
+                 alt="{{ $__sidebarSettings->company_name }}"
+                 class="w-11 h-11 rounded-2xl object-contain bg-white shadow-soft border border-brand-100 p-1.5">
+        @else
+            <span class="w-11 h-11 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-800 flex items-center justify-center text-white font-bold text-sm shadow-soft">MT</span>
+        @endif
         <div>
-            <p class="text-base font-bold text-slate-800 leading-tight tracking-tight">MUNDO TECH</p>
+            <p class="text-base font-bold text-slate-800 leading-tight tracking-tight">{{ $__sidebarSettings->company_name }}</p>
             <p class="text-xs text-slate-400 font-medium">Facturation</p>
         </div>
     </div>
@@ -42,6 +50,6 @@
 
 <div class="px-6 pb-7">
     <div class="text-[11px] text-slate-400 font-medium text-center pt-2">
-        © {{ date('Y') }} MUNDO TECH
+        © {{ date('Y') }} {{ $__sidebarSettings->company_name }}
     </div>
 </div>
