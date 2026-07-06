@@ -5,7 +5,7 @@
 
 @push('styles')
 <style>
-    .page-header-badge  { font-size:10px; font-weight:800; color:#6366f1; text-transform:uppercase; letter-spacing:2px; margin-bottom:4px; }
+    .page-header-badge  { font-size:10px; font-weight:800; color:#1c84ec; text-transform:uppercase; letter-spacing:2px; margin-bottom:4px; }
     .page-header-title  { font-size:26px; font-weight:800; color:#0f172a; letter-spacing:-.5px; }
     .page-header-sub    { font-size:13px; color:#94a3b8; margin-top:4px; }
 
@@ -14,10 +14,12 @@
         display: flex;
         gap: 10px;
         align-items: center;
+        width: 100%;
+        flex-wrap: wrap;
     }
     .search-field {
         position: relative;
-        flex: 1;
+        flex: 1 1 200px;
     }
     .search-field svg {
         position: absolute;
@@ -38,18 +40,18 @@
         color: #0f172a;
         outline: none;
         transition: border-color .15s, background .15s, box-shadow .15s;
-        min-width: 260px;
+        min-width: 0;
     }
     .search-field input:focus {
-        border-color: #6366f1;
+        border-color: #1c84ec;
         background: #ffffff;
-        box-shadow: 0 0 0 3px rgba(99,102,241,.12);
+        box-shadow: 0 0 0 3px rgba(28,132,236,.12);
     }
     .search-field input::placeholder { color: #cbd5e1; }
 
     .btn-search {
         padding: 11px 20px;
-        background: linear-gradient(135deg,#6366f1,#4f46e5);
+        background: linear-gradient(135deg,#1c84ec,#0e66ca);
         color: #fff;
         font-weight: 700;
         font-size: 13px;
@@ -57,7 +59,7 @@
         border-radius: 12px;
         cursor: pointer;
         transition: opacity .15s, transform .1s;
-        box-shadow: 0 2px 8px rgba(99,102,241,.3);
+        box-shadow: 0 2px 8px rgba(28,132,236,.3);
         white-space: nowrap;
     }
     .btn-search:hover { opacity: .9; transform: translateY(-1px); }
@@ -104,8 +106,8 @@
         gap: 5px;
         font-size: 12px;
         font-weight: 700;
-        color: #4f46e5;
-        background: #eef2ff;
+        color: #0e66ca;
+        background: #e0eefe;
         padding: 3px 10px;
         border-radius: 20px;
     }

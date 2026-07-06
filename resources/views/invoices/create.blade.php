@@ -13,11 +13,12 @@
     .field input,
     .field textarea {
         width: 100%;
-        padding: 16px 14px 6px 14px;
+        padding: 22px 14px 10px 14px;
         border: 1.5px solid #e2e8f0;
         border-radius: 12px;
         background: #f8fafc;
         font-size: 14px;
+        line-height: 1.3;
         color: #0f172a;
         outline: none;
         transition: border-color .18s, background .18s, box-shadow .18s;
@@ -26,9 +27,9 @@
     }
     .field input:focus,
     .field textarea:focus {
-        border-color: #6366f1;
+        border-color: #1c84ec;
         background: #ffffff;
-        box-shadow: 0 0 0 3px rgba(99,102,241,.12);
+        box-shadow: 0 0 0 3px rgba(28,132,236,.12);
     }
     .field input.has-error,
     .field textarea.has-error {
@@ -51,10 +52,10 @@
     .field input:not(:placeholder-shown) ~ label,
     .field textarea:focus ~ label,
     .field textarea:not(:placeholder-shown) ~ label {
-        top: 10px;
+        top: 9px;
         transform: none;
         font-size: 10px;
-        color: #6366f1;
+        color: #1c84ec;
         font-weight: 600;
         letter-spacing: .4px;
         text-transform: uppercase;
@@ -87,9 +88,9 @@
         transition: border-color .15s, box-shadow .15s, background .15s;
     }
     .item-input:focus {
-        border-color: #6366f1;
+        border-color: #1c84ec;
         background: #ffffff;
-        box-shadow: 0 0 0 3px rgba(99,102,241,.10);
+        box-shadow: 0 0 0 3px rgba(28,132,236,.10);
     }
     .item-input::placeholder { color: #cbd5e1; }
 
@@ -111,11 +112,11 @@
     .section-icon {
         width: 40px; height: 40px;
         border-radius: 12px;
-        background: linear-gradient(135deg,#eef2ff,#e0e7ff);
+        background: linear-gradient(135deg,#f0f7ff,#e0eefe);
         display: flex; align-items: center; justify-content: center;
         flex-shrink: 0;
     }
-    .section-icon svg { width: 18px; height: 18px; color: #6366f1; }
+    .section-icon svg { width: 18px; height: 18px; color: #1c84ec; }
     .section-title { font-size: 15px; font-weight: 700; color: #0f172a; }
     .section-sub   { font-size: 12px; color: #94a3b8; margin-top: 1px; }
 
@@ -148,7 +149,7 @@
         margin-bottom: 8px;
         transition: border-color .15s;
     }
-    .item-row:hover { border-color: #e0e7ff; }
+    .item-row:hover { border-color: #e0eefe; }
 
     .item-total {
         text-align: right;
@@ -169,6 +170,29 @@
     }
     .item-remove:hover { background: #fef2f2; color: #ef4444; }
 
+    /* ─── Responsive : articles empilés sur mobile ──────────────── */
+    @media (max-width: 767px) {
+        .item-row {
+            grid-template-columns: 1fr 1fr;
+            grid-template-areas:
+                "desig  desig"
+                "qty    price"
+                "total  remove";
+            row-gap: 8px;
+        }
+        .item-row .item-designation { grid-area: desig; }
+        .item-row .item-qty         { grid-area: qty; }
+        .item-row .item-price       { grid-area: price; }
+        .item-row .item-total       { grid-area: total; text-align: left; padding-right: 0; }
+        .item-row .item-remove      { grid-area: remove; justify-self: end; }
+    }
+
+    @media (max-width: 380px) {
+        .section-card { padding: 18px; }
+        .page-header-title { font-size: 22px; }
+        .btn-submit { width: 100%; min-width: 0; }
+    }
+
     /* Résumé totaux */
     .totals-row {
         display: flex;
@@ -186,14 +210,14 @@
         font-weight: 800;
         color: #0f172a;
     }
-    .totals-row.grand .grand-amount { color: #6366f1; }
+    .totals-row.grand .grand-amount { color: #1c84ec; }
 
     /* Btn submit */
     .btn-submit {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        background: linear-gradient(135deg,#6366f1,#4f46e5);
+        background: linear-gradient(135deg,#1c84ec,#0e66ca);
         color: #ffffff;
         font-weight: 700;
         font-size: 14px;
@@ -202,7 +226,7 @@
         border: none;
         cursor: pointer;
         transition: opacity .15s, transform .1s;
-        box-shadow: 0 4px 14px rgba(99,102,241,.35);
+        box-shadow: 0 4px 14px rgba(28,132,236,.35);
         min-width: 230px;
         justify-content: center;
     }
@@ -216,15 +240,15 @@
         gap: 6px;
         font-size: 13px;
         font-weight: 600;
-        color: #6366f1;
-        background: #eef2ff;
+        color: #1c84ec;
+        background: #f0f7ff;
         border: none;
         border-radius: 10px;
         padding: 7px 14px;
         cursor: pointer;
         transition: background .15s;
     }
-    .btn-add:hover { background: #e0e7ff; }
+    .btn-add:hover { background: #e0eefe; }
 
     /* Error text */
     .err { font-size: 11px; color: #ef4444; margin-top: 4px; padding-left: 4px; }
@@ -233,7 +257,7 @@
     .page-header-badge {
         font-size: 10px;
         font-weight: 800;
-        color: #6366f1;
+        color: #1c84ec;
         text-transform: uppercase;
         letter-spacing: 2px;
         margin-bottom: 4px;
@@ -278,7 +302,7 @@
         <div class="section-card">
             <div class="section-header">
                 <div class="section-icon">
-                    <x-icon name="user" class="w-5 h-5" style="color:#6366f1" />
+                    <x-icon name="user" class="w-5 h-5" style="color:#1c84ec" />
                 </div>
                 <div>
                     <div class="section-title">Informations client</div>
@@ -330,11 +354,11 @@
 
         {{-- ── BLOC ARTICLES ────────────────────────────────────────── --}}
         <div class="section-card">
-            <div class="section-header">
+            <div class="section-header flex-wrap">
                 <div class="section-icon">
-                    <x-icon name="cart" class="w-5 h-5" style="color:#6366f1" />
+                    <x-icon name="cart" class="w-5 h-5" style="color:#1c84ec" />
                 </div>
-                <div style="flex:1;">
+                <div style="flex:1; min-width:150px;">
                     <div class="section-title">Articles</div>
                     <div class="section-sub">Ajoutez les produits ou services facturés</div>
                 </div>
@@ -360,7 +384,7 @@
                                :name="`items[${index}][designation]`"
                                x-model="item.designation"
                                placeholder="Désignation du produit / service"
-                               class="item-input"
+                               class="item-input item-designation"
                                required>
 
                         <input type="number"
@@ -368,7 +392,7 @@
                                x-model.number="item.quantity"
                                min="1"
                                placeholder="Qté"
-                               class="item-input"
+                               class="item-input item-qty"
                                @input="calculateTotal()"
                                required>
 
@@ -378,7 +402,7 @@
                                x-model.number="item.unit_price"
                                min="0"
                                placeholder="Prix (FCFA)"
-                               class="item-input"
+                               class="item-input item-price"
                                @input="calculateTotal()"
                                required>
 

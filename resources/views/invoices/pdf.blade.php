@@ -39,7 +39,7 @@
            BANDE D'ACCENT HAUT
         ═══════════════════════════════════════════════ */
         .top-bar {
-            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+            background: linear-gradient(135deg, #0d52a3 0%, #1c84ec 100%);
             height: 8px;
             width: 100%;
             margin-bottom: 0;
@@ -66,7 +66,7 @@
         .company-name {
             font-size: 20px;
             font-weight: bold;
-            color: #0f172a;
+            color: #123c6f;
             letter-spacing: -0.3px;
         }
         .company-tagline {
@@ -91,7 +91,7 @@
         .invoice-badge-cell { width: 45%; text-align: right; }
         .invoice-badge {
             display: inline-block;
-            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+            background: linear-gradient(135deg, #0d52a3 0%, #1c84ec 100%);
             color: #ffffff;
             font-size: 18px;
             font-weight: bold;
@@ -106,7 +106,7 @@
             line-height: 1.8;
             text-align: right;
         }
-        .invoice-meta strong { color: #0f172a; }
+        .invoice-meta strong { color: #123c6f; }
 
         /* Séparateur élégant */
         .divider {
@@ -116,7 +116,7 @@
         }
         .divider-accent {
             border: none;
-            border-top: 3px solid #0f172a;
+            border-top: 3px solid #1c84ec;
             width: 48px;
             margin: 0 0 16px 0;
         }
@@ -142,14 +142,14 @@
         .client-card {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-left: 3px solid #0f172a;
+            border-left: 3px solid #1c84ec;
             border-radius: 0 6px 6px 0;
             padding: 10px 14px;
         }
         .client-name {
             font-size: 13px;
             font-weight: bold;
-            color: #0f172a;
+            color: #123c6f;
             margin-bottom: 3px;
         }
         .client-detail {
@@ -182,7 +182,7 @@
             margin-bottom: 4px;
         }
         table.items thead tr {
-            background: #0f172a;
+            background: #1c84ec;
         }
         table.items th {
             color: #ffffff;
@@ -203,8 +203,8 @@
             color: #334155;
         }
         table.items td.text-right { text-align: right; }
-        table.items td.designation { color: #0f172a; font-weight: 500; }
-        table.items td.amount { font-weight: 600; color: #0f172a; }
+        table.items td.designation { color: #123c6f; font-weight: 500; }
+        table.items td.amount { font-weight: 600; color: #123c6f; }
 
         /* ═══════════════════════════════════════════════
            TOTAUX
@@ -222,7 +222,7 @@
         .totals-table tr.subtotal td { color: #64748b; }
         .totals-table tr.discount td { color: #64748b; }
         .totals-table tr.total-row {
-            background: #0f172a;
+            background: #1c84ec;
             border-radius: 6px;
         }
         .totals-table tr.total-row td {
@@ -293,7 +293,7 @@
         .thanks-block { width: 30%; text-align: center; }
         .thanks-text {
             font-size: 10.5px;
-            color: #0f172a;
+            color: #123c6f;
             font-weight: bold;
             font-style: italic;
         }
@@ -404,7 +404,7 @@
                             <span>Articles</span>
                             <strong>{{ $invoice->items->count() }}</strong>
                         </div>
-                        <div class="summary-row" style="color:#0f172a; font-weight:bold; border-top:1px solid #e2e8f0; margin-top:4px; padding-top:4px;">
+                        <div class="summary-row" style="color:#123c6f; font-weight:bold; border-top:1px solid #e2e8f0; margin-top:4px; padding-top:4px;">
                             <span>Montant dû</span>
                             <span>{{ number_format($invoice->total, 0, ',', ' ') }} FCFA</span>
                         </div>

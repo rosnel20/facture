@@ -42,7 +42,7 @@
     <div class="flex min-h-screen">
 
         {{-- ============ SIDEBAR DESKTOP ============ --}}
-        <aside class="hidden lg:flex lg:flex-col w-72 flex-shrink-0 bg-gradient-to-b from-brand-200 via-brand-50 to-white border-r border-slate-200/70">
+        <aside class="hidden lg:flex lg:flex-col w-72 flex-shrink-0 sticky top-0 h-screen overflow-y-auto bg-gradient-to-b from-brand-200 via-brand-50 to-white border-r border-slate-200/70">
             @include('partials.sidebar-content')
         </aside>
 
