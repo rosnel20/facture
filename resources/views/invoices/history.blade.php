@@ -148,131 +148,142 @@
     }
     .empty-state svg { width: 48px; height: 48px; color: #e2e8f0; margin: 0 auto 12px; display:block; }
     .empty-state p { font-size: 14px; margin: 0; }
+
+    /* ─── Recherche live ─────────────────────────────────────── */
+    .search-field .spinner {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 15px; height: 15px;
+        border: 2px solid #e2e8f0;
+        border-top-color: #1c84ec;
+        border-radius: 50%;
+        animation: search-spin .6s linear infinite;
+    }
+    @keyframes search-spin { to { transform: translateY(-50%) rotate(360deg); } }
+    #invoices-results { transition: opacity .12s ease; }
+    #invoices-results.is-loading { opacity: .5; }
 </style>
 @endpush
 
 @section('content')
-<div class="max-w-6xl mx-auto">
+<div class="max-w-6xl mx-auto"
+     x-data="invoiceLiveSearch(@js($search))"
+     x-init="init()">
 
     {{-- En-tête --}}
     <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-5 mb-7">
         <div>
             <p class="page-header-badge">Facturation</p>
             <h1 class="page-header-title">Historique</h1>
-            <p class="page-header-sub">
+            <p class="page-header-sub" id="invoices-count">
                 <strong style="color:#0f172a;">{{ $invoices->total() }}</strong> facture(s) enregistrée(s)
             </p>
         </div>
 
         {{-- Recherche --}}
-        <form method="GET" action="{{ route('invoices.index') }}" class="search-wrapper">
+        <form method="GET" action="{{ route('invoices.index') }}" class="search-wrapper" @submit.prevent="fetchResults()">
             <div class="search-field">
-                <x-icon name="search" />
+                <x-icon name="search" x-show="!loading"></x-icon>
+                <span class="spinner" x-show="loading" x-cloak></span>
                 <input type="text"
                        name="search"
-                       value="{{ $search }}"
+                       x-model="search"
+                       @input="onInput()"
                        placeholder="Client, numéro, téléphone…"
                        autocomplete="off">
             </div>
             <button type="submit" class="btn-search">
                 Rechercher
             </button>
-            @if($search)
-                <a href="{{ route('invoices.index') }}"
-                   style="font-size:12px;color:#94a3b8;white-space:nowrap;text-decoration:none;padding:4px;">
-                   Effacer
-                </a>
-            @endif
+            <a href="{{ route('invoices.index') }}"
+               x-show="search"
+               x-cloak
+               @click.prevent="search = ''; fetchResults()"
+               style="font-size:12px;color:#94a3b8;white-space:nowrap;text-decoration:none;padding:4px;cursor:pointer;">
+               Effacer
+            </a>
         </form>
     </div>
 
-    {{-- ══ VUE TABLEAU (desktop) ══════════════════════════════════════ --}}
-    <div class="data-card hidden md:block">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>N° Facture</th>
-                    <th>Client</th>
-                    <th>Téléphone</th>
-                    <th>Date</th>
-                    <th class="th-right">Montant</th>
-                    <th class="th-right">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($invoices as $invoice)
-                    <tr>
-                        <td>
-                            <span class="num-badge">
-                                <x-icon name="invoice" class="w-3.5 h-3.5" />
-                                {{ $invoice->invoice_number }}
-                            </span>
-                        </td>
-                        <td style="font-weight:600; color:#0f172a;">{{ $invoice->client_name }}</td>
-                        <td style="color:#64748b;">{{ $invoice->client_phone }}</td>
-                        <td>
-                            <span class="date-chip">{{ $invoice->created_at->format('d/m/Y') }}</span>
-                        </td>
-                        <td class="td-right">
-                            <span class="amount-cell">{{ number_format($invoice->total, 0, ',', ' ') }} FCFA</span>
-                        </td>
-                        <td class="td-right">
-                            @include('invoices.partials.row-actions', ['invoice' => $invoice])
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="6">
-                            <div class="empty-state">
-                                <x-icon name="empty" />
-                                <p>Aucune facture trouvée.</p>
-                            </div>
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-
-    {{-- ══ VUE CARTES (mobile) ════════════════════════════════════════ --}}
-    <div class="md:hidden space-y-3">
-        @forelse ($invoices as $invoice)
-            <div class="mobile-card">
-                <div class="mobile-card-header">
-                    <div>
-                        <span class="num-badge" style="margin-bottom:6px;display:inline-flex;">
-                            {{ $invoice->invoice_number }}
-                        </span>
-                        <div style="font-weight:700; color:#0f172a; font-size:14px; margin-top:4px;">
-                            {{ $invoice->client_name }}
-                        </div>
-                    </div>
-                    <div style="font-weight:800; color:#0f172a; font-size:14px;">
-                        {{ number_format($invoice->total, 0, ',', ' ') }} FCFA
-                    </div>
-                </div>
-                <div style="display:flex; justify-content:space-between; font-size:11px; color:#94a3b8; margin-bottom:12px;">
-                    <span style="display:flex;align-items:center;gap:4px;">
-                        <x-icon name="phone" class="w-3.5 h-3.5" /> {{ $invoice->client_phone }}
-                    </span>
-                    <span class="date-chip">{{ $invoice->created_at->format('d/m/Y') }}</span>
-                </div>
-                @include('invoices.partials.row-actions', ['invoice' => $invoice])
-            </div>
-        @empty
-            <div class="mobile-card">
-                <div class="empty-state">
-                    <x-icon name="empty" />
-                    <p>Aucune facture pour le moment.</p>
-                </div>
-            </div>
-        @endforelse
-    </div>
-
-    {{-- Pagination --}}
-    <div class="mt-6">
-        {{ $invoices->links() }}
+    {{-- ══ Résultats (remplacés dynamiquement à chaque recherche) ══ --}}
+    <div id="invoices-results" :class="{ 'is-loading': loading }" @click="onResultsClick($event)">
+        @include('invoices.partials.results-list', ['invoices' => $invoices])
     </div>
 
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    function invoiceLiveSearch(initialSearch) {
+        return {
+            search: initialSearch || '',
+            loading: false,
+            timer: null,
+            baseUrl: @js(route('invoices.index')),
+
+            init() {
+                // Gère le bouton "précédent/suivant" du navigateur après une recherche.
+                window.addEventListener('popstate', () => {
+                    const params = new URLSearchParams(window.location.search);
+                    this.search = params.get('search') || '';
+                    this.fetchResults(false);
+                });
+            },
+
+            onInput() {
+                clearTimeout(this.timer);
+                this.timer = setTimeout(() => this.fetchResults(), 400);
+            },
+
+            // Intercepte uniquement les clics sur les liens de pagination pour rester
+            // en AJAX, sans toucher aux actions des lignes (modifier / supprimer / whatsapp…).
+            onResultsClick(event) {
+                const link = event.target.closest('#invoices-pagination a');
+                if (!link) return;
+                event.preventDefault();
+                this.fetchResults(true, link.href);
+            },
+
+            fetchResults(pushState = true, explicitUrl = null) {
+                let url = explicitUrl;
+                if (!url) {
+                    const u = new URL(this.baseUrl, window.location.origin);
+                    if (this.search) u.searchParams.set('search', this.search);
+                    url = u.toString();
+                }
+
+                this.loading = true;
+
+                fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                    .then(r => r.text())
+                    .then(html => {
+                        const doc = new DOMParser().parseFromString(html, 'text/html');
+
+                        const newResults = doc.getElementById('invoices-results');
+                        if (newResults) {
+                            document.getElementById('invoices-results').innerHTML = newResults.innerHTML;
+                        }
+
+                        const newCount = doc.getElementById('invoices-count');
+                        if (newCount) {
+                            document.getElementById('invoices-count').innerHTML = newCount.innerHTML;
+                        }
+
+                        if (pushState) {
+                            window.history.pushState({}, '', url);
+                        }
+                    })
+                    .catch(() => {
+                        window.dispatchEvent(new CustomEvent('toast', {
+                            detail: { type: 'error', message: "Impossible de charger les résultats, réessaie." }
+                        }));
+                    })
+                    .finally(() => { this.loading = false; });
+            }
+        }
+    }
+</script>
+@endpush

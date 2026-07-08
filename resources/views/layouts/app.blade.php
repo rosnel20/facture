@@ -37,7 +37,8 @@
     </style>
     @stack('styles')
 </head>
-<body class="bg-slate-50 min-h-screen text-slate-700 antialiased" x-data="{ sidebarOpen: false }">
+<body class="bg-slate-50 min-h-screen text-slate-700 antialiased"
+      x-data="{ sidebarOpen: false, confirmLogout: false, loggingOut: false }">
 
     <div class="flex min-h-screen">
 
@@ -97,6 +98,60 @@
         </div>
     </div>
 
+    {{-- ============ MODALE DE DÉCONNEXION ============
+         Placée ici, hors des <aside> (qui ont overflow-y-auto),
+         pour éviter que le navigateur ne "clippe" cet élément
+         position:fixed aux dimensions de la sidebar. --}}
+    @auth
+    <div x-show="confirmLogout" x-cloak
+         class="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm"
+         x-transition:enter="transition-opacity ease-out duration-200"
+         x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+         x-transition:leave="transition-opacity ease-in duration-150"
+         x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+         @click.self="if (!loggingOut) confirmLogout = false"
+         @keydown.escape.window="if (!loggingOut) confirmLogout = false">
+
+        <div x-show="confirmLogout"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+             class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 text-center">
+
+            <div class="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 text-red-500">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+                </svg>
+            </div>
+
+            <h3 class="text-base font-bold text-slate-800 mb-1.5">Se déconnecter ?</h3>
+            <p class="text-sm text-slate-500 mb-6">
+                Tu devras te reconnecter pour accéder à ton espace de facturation, {{ auth()->user()->name }}.
+            </p>
+
+            <div class="flex gap-3">
+                <button type="button" @click="confirmLogout = false" :disabled="loggingOut"
+                    class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                    Annuler
+                </button>
+                <form method="POST" action="{{ route('logout') }}" class="flex-1" @submit="loggingOut = true">
+                    @csrf
+                    <button type="submit" :disabled="loggingOut"
+                        class="w-full px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-red-500 hover:bg-red-600 disabled:opacity-70 disabled:cursor-not-allowed shadow-soft transition-colors flex items-center justify-center gap-2">
+                        <svg x-show="loggingOut" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                             class="w-4 h-4 animate-spin">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"></circle>
+                            <path fill="currentColor" class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                        </svg>
+                        <span x-text="loggingOut ? 'Déconnexion...' : 'Déconnexion'"></span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endauth
+
     {{-- ============ TOASTS ============ --}}
     <div x-data="toastManager()" x-init="init()"
          class="fixed top-4 right-4 z-[100] w-[calc(100%-2rem)] max-w-sm space-y-3 pointer-events-none"
@@ -141,8 +196,13 @@
                     @if (session('success'))
                         this.push('success', @json(session('success')));
                     @endif
+                    @if (session('error'))
+                        this.push('error', @json(session('error')));
+                    @endif
                     @if ($errors->any())
-                        this.push('error', 'Veuillez corriger les erreurs signalées dans le formulaire.');
+                        @foreach ($errors->all() as $err)
+                            this.push('error', @json($err));
+                        @endforeach
                     @endif
                 },
                 push(type, message) {
@@ -179,8 +239,6 @@
                 const file = new File([blob], fileName, { type: 'application/pdf' });
 
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    // On copie et on prévient AVANT d'ouvrir le partage,
-                    // pendant que la page a encore le focus.
                     try {
                         await navigator.clipboard.writeText(message);
                         window.dispatchEvent(new CustomEvent('toast', {
@@ -205,10 +263,8 @@
                 }
             } catch (err) {
                 if (err && err.name === 'AbortError') {
-                    // L'utilisateur a annulé le partage : on ne fait rien de plus.
                     return;
                 }
-                // Sinon on continue vers la méthode de secours ci-dessous.
             }
 
             window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(message), '_blank', 'noopener');

@@ -15,7 +15,6 @@ class AuthController extends Controller
         if (Auth::check()) {
             return redirect()->route('invoices.create');
         }
-
         return view('auth.login');
     }
 
@@ -31,7 +30,6 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-
             return redirect()
                 ->intended(route('invoices.create'))
                 ->with('success', 'Bienvenue ' . Auth::user()->name . ' !');
@@ -39,6 +37,7 @@ class AuthController extends Controller
 
         return back()
             ->withErrors(['email' => 'Identifiants incorrects. Vérifie ton e-mail et ton mot de passe.'])
+            ->with('error', 'La connexion a échoué.')
             ->onlyInput('email');
     }
 
@@ -48,7 +47,6 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
